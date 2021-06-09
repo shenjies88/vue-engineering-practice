@@ -144,6 +144,10 @@ export default {
 
     .el-main {
         background-color: #eaedf1;
+
+        .el-breadcrumb {
+            margin-bottom: 15px;
+        }
     }
 }
 </style>

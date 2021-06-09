@@ -4,6 +4,7 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     Button,
+    Card,
     Container,
     Form,
     FormItem,
@@ -31,4 +32,5 @@ Vue.use(MenuItemGroup)
 Vue.use(MenuItem)
 Vue.use(Breadcrumb)
 Vue.use(BreadcrumbItem)
+Vue.use(Card)
 Vue.prototype.$message = Message
