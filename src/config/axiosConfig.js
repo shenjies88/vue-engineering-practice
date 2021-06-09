@@ -11,7 +11,7 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(response => {
         const {
             status,
-            data
+            data: res
         } = response
         if (status !== 200) {
             let errorMsg = '网络异常'
@@ -28,7 +28,10 @@ axios.interceptors.response.use(response => {
             }
             throw new Error(errorMsg)
         }
-        const { meta } = data
+        const {
+            data,
+            meta
+        } = res
         if (meta.status !== 200) {
             Message.error(meta.msg)
             throw new Error(meta.msg)

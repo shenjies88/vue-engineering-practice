@@ -13,7 +13,8 @@
             <el-aside :width="isCollapse ? 64+'px':200+'px'">
                 <div class="toggle-button" @click="toggleCollapse">|||</div>
                 <!-- 菜单 -->
-                <el-menu unique-opened :collapseTransition="false" :collapse="isCollapse" background-color="#333744"
+                <el-menu router unique-opened :collapseTransition="false" :collapse="isCollapse"
+                         background-color="#333744"
                          text-color="#fff" active-text-color="#409eff">
                     <!-- 1级菜单 -->
                     <el-submenu v-for="item in menuList" :index="item.id+''" :key="item.id">
@@ -22,7 +23,7 @@
                             <span>{{ item.authName }}</span>
                         </template>
                         <!-- 2级菜单 -->
-                        <el-menu-item v-for="child in item.children" :index="child.id+''" :key="child.id">
+                        <el-menu-item v-for="child in item.children" :index="child.path" :key="child.id">
                             <i class="el-icon-menu"></i>
                             <span>{{ child.authName }}</span>
                         </el-menu-item>
@@ -30,7 +31,9 @@
                 </el-menu>
             </el-aside>
             <!-- 主体 -->
-            <el-main>Main</el-main>
+            <el-main>
+                <router-view/>
+            </el-main>
         </el-container>
     </el-container>
 </template>
@@ -59,7 +62,7 @@ export default {
         },
         getMenuList() {
             this.$http.get('menus').then(res => {
-                this.menuList = res.data
+                this.menuList = res
             })
         },
         toggleCollapse() {

@@ -56,7 +56,7 @@ export default {
           }
           this.$http.post('login', this.loginForm).then(res => {
               this.$message.success('登陆成功')
-              window.sessionStorage.setItem('token', res.data.token)
+              window.sessionStorage.setItem('token', res.token)
               this.$router.push('/home')
           })
       })
