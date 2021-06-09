@@ -6,19 +6,19 @@
         <img src="../assets/logo.png" alt />
       </div>
       <!-- 登陆表单区域 -->
-      <el-form class="login_form" label-width="8px">
+      <el-form :model="loginForm" :rules="loginFormRules" class="login_form" label-width="8px">
         <!-- 账号 -->
-        <el-form-item>
-          <el-input prefix-icon="el-icon-user-solid"></el-input>
+        <el-form-item prop="username">
+          <el-input v-model="loginForm.username" prefix-icon="el-icon-user-solid"></el-input>
         </el-form-item>
         <!-- 密码 -->
-        <el-form-item>
-          <el-input prefix-icon="iconfont icon-password"></el-input>
+        <el-form-item prop="password">
+          <el-input v-model="loginForm.password" type="password" prefix-icon="iconfont icon-password"></el-input>
         </el-form-item>
         <!-- 按钮区域 -->
         <el-form-item class="btns">
           <el-button type="primary">登陆</el-button>
-          <el-button type="info">重置</el-button>
+          <el-button type="info" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -26,7 +26,32 @@
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      loginFormRules: {
+        username: [
+          { required: true, message: '请输入账号', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    reset() {
+      this.loginForm.username = ''
+      this.loginForm.password = ''
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
