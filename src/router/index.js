@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '../components/Login.vue'
-import Home from '../components/Home.vue'
-import Welcome from '@/components/Welcome'
+import Login from '@/components/Login.vue'
+import Home from '@/components/Home.vue'
+import Welcome from '@/views/Welcome'
+import User from '@/views/User'
 import { Message } from 'element-ui'
 
 Vue.use(VueRouter)
@@ -24,6 +25,10 @@ const routes = [
             {
                 path: '/welcome',
                 component: Welcome
+            },
+            {
+                path: '/users',
+                component: User
             }
         ]
     }
