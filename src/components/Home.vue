@@ -13,7 +13,7 @@
             <el-aside :width="isCollapse ? 64+'px':200+'px'">
                 <div class="toggle-button" @click="toggleCollapse">|||</div>
                 <!-- 菜单 -->
-                <el-menu unique-opened :collapse-transition="false" :collapse="isCollapse" background-color="#333744"
+                <el-menu unique-opened :collapseTransition="false" :collapse="isCollapse" background-color="#333744"
                          text-color="#fff" active-text-color="#409eff">
                     <!-- 1级菜单 -->
                     <el-submenu v-for="item in menuList" :index="item.id+''" :key="item.id">
