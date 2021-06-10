@@ -30,7 +30,8 @@
                                    icon="el-icon-edit"></el-button>
                     </el-tooltip>
                     <el-tooltip content="删除用户" placement="top" :enterable="false">
-                        <el-button size="mini" type="danger" icon="el-icon-delete"></el-button>
+                        <el-button size="mini" type="danger" icon="el-icon-delete"
+                                   @click="removeUser(scope.row.id)"></el-button>
                     </el-tooltip>
                     <el-tooltip content="分配角色" placement="top" :enterable="false">
                         <el-button size="mini" type="warning" icon="el-icon-setting"></el-button>
@@ -235,7 +236,7 @@ export default {
         },
         userStateChange(userInfo) {
             userApi.userStateChange(userInfo.id, userInfo.mg_state).then(res =>
-                this.$message.success('修改成功')
+                this.$message.success('状态修改成功')
             ).catch(error => {
                 userInfo.mg_state = !userInfo.mg_state
                 this.$message.error(error)
@@ -275,6 +276,26 @@ export default {
                     this.getUserList()
                 })
                 this.updateDialogVisible = false
+            })
+        },
+        removeUser(id) {
+            this.$confirm('此操作将删除用户, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                userApi.deleteUser(id).then(() => {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    })
+                    this.getUserList()
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                })
             })
         }
     }

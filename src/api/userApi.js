@@ -17,5 +17,8 @@ export default {
     },
     updateUser: function (userInfo) {
         return axiosConfig.put(`/users/${userInfo.id}`, userInfo)
+    },
+    deleteUser: function (id) {
+        return axiosConfig.delete(`/users/${id}`)
     }
 }
