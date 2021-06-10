@@ -2,7 +2,7 @@
     <el-card>
         <!-- 表格区域 -->
         <el-table stripe border :data="rightList" highlight-current-row
-                  :default-sort="{prop: 'level', order: 'ascending'}">
+                  :default-sort=defaultSort>
             <el-table-column type="index" label="#"></el-table-column>
             <el-table-column label="权限名称" prop="authName"></el-table-column>
             <el-table-column label="路径" prop="path"></el-table-column>
@@ -22,7 +22,11 @@ export default {
     name: 'Rights',
     data() {
         return {
-            rightList: []
+            rightList: [],
+            defaultSort: {
+                prop: 'level',
+                order: 'ascending'
+            }
         }
     },
     created() {
