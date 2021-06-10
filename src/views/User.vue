@@ -18,23 +18,32 @@
             <el-table-column label="角色" prop="role_name"></el-table-column>
             <el-table-column label="状态" prop="mg_state">
                 <template slot-scope="scope">
-                    <el-switch v-model="scope.row.mg_state"></el-switch>
+                    <el-switch v-model="scope.row.mg_state" @change="userStateChange(scope.row)"></el-switch>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="180">
-                <el-tooltip content="修改用户" placement="top">
+                <el-tooltip content="修改用户" placement="top" :enterable="false">
                     <el-button size="mini" type="primary" icon="el-icon-edit"></el-button>
                 </el-tooltip>
                 <template>
-                    <el-tooltip content="删除用户" placement="top">
+                    <el-tooltip content="删除用户" placement="top" :enterable="false">
                         <el-button size="mini" type="danger" icon="el-icon-delete"></el-button>
                     </el-tooltip>
-                    <el-tooltip content="分配角色" placement="top">
+                    <el-tooltip content="分配角色" placement="top" :enterable="false">
                         <el-button size="mini" type="warning" icon="el-icon-setting"></el-button>
                     </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
+        <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="this.queryParams.pagenum"
+            :page-sizes="[1, 2, 5, 10]"
+            :page-size="this.queryParams.pagesize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="this.total">
+        </el-pagination>
     </el-card>
 </template>
 
@@ -61,6 +70,22 @@ export default {
             }).then(res => {
                 this.userList = res.users
                 this.total = res.total
+            })
+        },
+        handleSizeChange(newSize) {
+            this.queryParams.pagesize = newSize
+            this.getUserList()
+        },
+        handleCurrentChange(newNum) {
+            this.queryParams.pagenum = newNum
+            this.getUserList()
+        },
+        userStateChange(userInfo) {
+            this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`).then(res =>
+                this.$message.success('修改成功')
+            ).catch(error => {
+                userInfo.mg_state = !userInfo.mg_state
+                this.$message.error(error)
             })
         }
     }
