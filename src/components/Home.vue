@@ -37,7 +37,11 @@
                 <!-- 面包屑 -->
                 <el-breadcrumb separator="/">
                     <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item :key="item.id" v-for="item in breadcrumbItemList">{{ item.authName }}
+                    <el-breadcrumb-item :key="item.id" v-for="item in parentBreadcrumbItemList">
+                        {{ item.authName }}
+                    </el-breadcrumb-item>
+                    <el-breadcrumb-item :key="item.id" v-for="item in childBreadcrumbItemList">
+                        {{ item.authName }}
                     </el-breadcrumb-item>
                 </el-breadcrumb>
                 <!-- 主体路由 -->
@@ -67,11 +71,28 @@ export default {
         this.activePath = window.sessionStorage.getItem('activePath')
     },
     computed: {
-        breadcrumbItemList: function () {
-            return this.menuList
+        parentBreadcrumbItemList: function () {
+            return this.findMenu()
+        },
+        childBreadcrumbItemList: function () {
+            const menuList = this.findMenu()
+            const route = this.$route
+            return menuList.length > 0 ? menuList[0].children.filter(e => {
+                return ('/' + e.path) === route.path
+            }) : menuList
         }
     },
     methods: {
+        findMenu() {
+            //  分离出parent和child
+            const route = this.$route
+            return this.menuList.filter(parent => {
+                const list = parent.children.filter(child => {
+                    return ('/' + child.path) === route.path
+                })
+                return list.length > 0
+            })
+        },
         logout() {
             window.sessionStorage.clear()
             this.$router.push('/login')
@@ -90,8 +111,6 @@ export default {
         saveMenuItemPath(activePath) {
             window.sessionStorage.setItem('activePath', activePath)
             this.activePath = activePath
-            console.log(this.$route)
-            console.log(this.menuList)
         }
     }
 }
