@@ -11,5 +11,8 @@ export default {
         return axiosConfig.get('/users', {
             params: queryParams
         })
+    },
+    getById(id) {
+        return axiosConfig.get(`/users/${id}`)
     }
 }

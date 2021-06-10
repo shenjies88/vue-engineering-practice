@@ -24,10 +24,11 @@
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="180">
-                <el-tooltip content="修改用户" placement="top" :enterable="false">
-                    <el-button size="mini" type="primary" icon="el-icon-edit"></el-button>
-                </el-tooltip>
-                <template>
+                <template slot-scope="scope">
+                    <el-tooltip content="修改用户" placement="top" :enterable="false">
+                        <el-button size="mini" type="primary" @click="showEditDialog(scope.row.id)"
+                                   icon="el-icon-edit"></el-button>
+                    </el-tooltip>
                     <el-tooltip content="删除用户" placement="top" :enterable="false">
                         <el-button size="mini" type="danger" icon="el-icon-delete"></el-button>
                     </el-tooltip>
@@ -72,6 +73,28 @@
                 <el-button type="primary" @click="addUser">确 定</el-button>
             </span>
         </el-dialog>
+        <!-- 修改对话框 -->
+        <el-dialog
+            title="修改用户"
+            :visible.sync="updateDialogVisible"
+            width="50%"
+            @close="updateDialogClose">
+            <el-form :model="updateForm" :rules="updateFormRules" ref="updateFormRef" label-width="80px">
+                <el-form-item label="用户名称" prop="username">
+                    <el-input v-model="updateForm.username" disabled/>
+                </el-form-item>
+                <el-form-item label="邮箱" prop="email">
+                    <el-input v-model="updateForm.email"/>
+                </el-form-item>
+                <el-form-item label="手机号" prop="mobile">
+                    <el-input v-model="updateForm.mobile"/>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="updateDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="updateUser">确 定</el-button>
+            </span>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -103,6 +126,7 @@ export default {
             },
             total: 0,
             addDialogVisible: false,
+            updateDialogVisible: false,
             addForm: {
                 username: '',
                 password: '',
@@ -158,6 +182,35 @@ export default {
                         trigger: 'blur'
                     }
                 ]
+            },
+            updateForm: {
+                username: '',
+                email: '',
+                mobile: ''
+            },
+            updateFormRules: {
+                email: [
+                    {
+                        required: true,
+                        message: '请输入邮箱',
+                        trigger: 'blur'
+                    },
+                    {
+                        validator: checkEmail,
+                        trigger: 'blur'
+                    }
+                ],
+                mobile: [
+                    {
+                        required: true,
+                        message: '请输入手机号',
+                        trigger: 'blur'
+                    },
+                    {
+                        validator: checkMobile,
+                        trigger: 'blur'
+                    }
+                ]
             }
         }
     },
@@ -190,6 +243,9 @@ export default {
         addDialogClose() {
             this.$refs.addFormRef.resetFields()
         },
+        updateDialogClose() {
+            this.$refs.updateFormRef.resetFields()
+        },
         addUser() {
             this.$refs.addFormRef.validate(async valid => {
                 if (!valid) {
@@ -201,6 +257,15 @@ export default {
                 })
                 this.addDialogVisible = false
             })
+        },
+        showEditDialog(id) {
+            userApi.getById(id).then(res => {
+                this.updateDialogVisible = true
+                this.updateForm = res
+            })
+        },
+        updateUser() {
+
         }
     }
 }
