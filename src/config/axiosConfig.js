@@ -1,9 +1,7 @@
 import axios from 'axios'
-import Vue from 'vue'
 import { Message } from 'element-ui'
 
-Vue.prototype.$http = axios
-axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1'
 axios.interceptors.request.use(config => {
     config.headers.Authorization = window.sessionStorage.getItem('token')
     return config
@@ -32,7 +30,7 @@ axios.interceptors.response.use(response => {
             data,
             meta
         } = res
-        if (meta.status !== 200) {
+        if (meta.status !== 200 && meta.status !== 201) {
             Message.error(meta.msg)
             throw new Error(meta.msg)
         }
@@ -42,3 +40,5 @@ axios.interceptors.response.use(response => {
         return Promise.reject(error)
     }
 )
+
+export default axios

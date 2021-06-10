@@ -51,7 +51,8 @@
         <el-dialog
             title="添加用户"
             :visible.sync="addDialogVisible"
-            width="50%">
+            width="50%"
+            @close="addDialogClose">
             <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="80px">
                 <el-form-item label="用户名称" prop="username">
                     <el-input v-model="addForm.username"/>
@@ -68,16 +69,31 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="addDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addDialogVisible = false">确 定</el-button>
+                <el-button type="primary" @click="addUser">确 定</el-button>
             </span>
         </el-dialog>
     </el-card>
 </template>
 
 <script>
+import regConst from '@/const/regConst'
+import userApi from '@/api/userApi'
+
 export default {
     name: 'User',
     data() {
+        var checkEmail = (rule, value, cb) => {
+            if (!regConst.emailReg.test(value)) {
+                return cb(new Error('邮箱格式不正确'))
+            }
+            cb()
+        }
+        var checkMobile = (rule, value, cb) => {
+            if (!regConst.mobileReg.test(value)) {
+                return cb(new Error('手机格式不正确'))
+            }
+            cb()
+        }
         return {
             userList: [],
             queryParams: {
@@ -125,12 +141,20 @@ export default {
                         required: true,
                         message: '请输入邮箱',
                         trigger: 'blur'
+                    },
+                    {
+                        validator: checkEmail,
+                        trigger: 'blur'
                     }
                 ],
                 mobile: [
                     {
                         required: true,
                         message: '请输入手机号',
+                        trigger: 'blur'
+                    },
+                    {
+                        validator: checkMobile,
                         trigger: 'blur'
                     }
                 ]
@@ -142,9 +166,7 @@ export default {
     },
     methods: {
         getUserList() {
-            this.$http.get('/users', {
-                params: this.queryParams
-            }).then(res => {
+            userApi.userList(this.queryParams).then(res => {
                 this.userList = res.users
                 this.total = res.total
             })
@@ -158,11 +180,26 @@ export default {
             this.getUserList()
         },
         userStateChange(userInfo) {
-            this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`).then(res =>
+            userApi.userStateChange(userInfo.id, userInfo.mg_state).then(res =>
                 this.$message.success('修改成功')
             ).catch(error => {
                 userInfo.mg_state = !userInfo.mg_state
                 this.$message.error(error)
+            })
+        },
+        addDialogClose() {
+            this.$refs.addFormRef.resetFields()
+        },
+        addUser() {
+            this.$refs.addFormRef.validate(async valid => {
+                if (!valid) {
+                    return
+                }
+                userApi.addUser(this.addForm).then(res => {
+                    this.$message.success('添加用户成功')
+                    this.getUserList()
+                })
+                this.addDialogVisible = false
             })
         }
     }
