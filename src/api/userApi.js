@@ -14,5 +14,8 @@ export default {
     },
     getById(id) {
         return axiosConfig.get(`/users/${id}`)
+    },
+    updateUser: function (userInfo) {
+        return axiosConfig.put(`/users/${userInfo.id}`, userInfo)
     }
 }

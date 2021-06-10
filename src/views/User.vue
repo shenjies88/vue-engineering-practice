@@ -184,6 +184,7 @@ export default {
                 ]
             },
             updateForm: {
+                id: null,
                 username: '',
                 email: '',
                 mobile: ''
@@ -265,7 +266,16 @@ export default {
             })
         },
         updateUser() {
-
+            this.$refs.updateFormRef.validate(async valid => {
+                if (!valid) {
+                    return
+                }
+                userApi.updateUser(this.updateForm).then(res => {
+                    this.$message.success('修改用户成功')
+                    this.getUserList()
+                })
+                this.updateDialogVisible = false
+            })
         }
     }
 }
