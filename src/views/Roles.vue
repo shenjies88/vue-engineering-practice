@@ -53,22 +53,47 @@
                         <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
                     </el-tooltip>
                     <el-tooltip content="分配权限" placement="top" :enterable="false">
-                        <el-button size="mini" type="warning" icon="el-icon-setting">分配权限</el-button>
+                        <el-button @click="showSetRightDialog(scope.row)" size="mini" type="warning"
+                                   icon="el-icon-setting">分配权限
+                        </el-button>
                     </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
+        <!-- 分配权限对话框 -->
+        <el-dialog
+            title="提示"
+            :visible.sync="setRightDialog"
+            width="50%"
+            @close="closeSetRightDialog">
+            <!-- 树形权限 -->
+            <el-tree ref="treeRef" node-key="id" :default-checked-keys="defaultKeys" show-checkbox default-expand-all
+                     :data="rightList" :props="rightListProps"></el-tree>
+            <span slot="footer" class="dialog-footer">
+    <el-button @click="setRightDialog = false">取 消</el-button>
+    <el-button type="primary" @click="allowRight">确 定</el-button>
+  </span>
+        </el-dialog>
     </el-card>
 </template>
 
 <script>
 import rolesApi from '@/api/rolesApi'
+import rightsApi from '@/api/rightsApi'
 
 export default {
     name: 'Roles',
     data() {
         return {
-            rolesList: []
+            rolesList: [],
+            setRightDialog: false,
+            rightList: [],
+            rightListProps: {
+                children: 'children',
+                label: 'authName'
+            },
+            defaultKeys: [],
+            roleId: null
         }
     },
     created() {
@@ -99,7 +124,39 @@ export default {
                     message: '已取消删除'
                 })
             })
+        },
+        showSetRightDialog(row) {
+            this.setRightDialog = true
+            this.roleId = row.id
+            rightsApi.rightList('tree').then(res => {
+                this.rightList = res
+                this.getLeaftKeys(row, this.defaultKeys)
+            })
+        },
+        getLeaftKeys(node, arr) {
+            if (!node.children) {
+                return arr.push(node.id)
+            }
+            node.children.forEach(item => {
+                return this.getLeaftKeys(item, arr)
+            })
+        },
+        closeSetRightDialog() {
+            this.defaultKeys = []
+        },
+        allowRight() {
+            const keys = [
+                ...this.$refs.treeRef.getCheckedKeys(),
+                ...this.$refs.treeRef.getHalfCheckedKeys()
+            ]
+            const idStr = keys.join(',')
+            rolesApi.roleAuthorization(this.roleId, idStr).then(() => {
+                this.$message.success('授权成功')
+                this.getRolesList()
+            })
+            this.setRightDialog = false
         }
+
     }
 }
 </script>
