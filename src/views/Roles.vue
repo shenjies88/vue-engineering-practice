@@ -156,7 +156,6 @@ export default {
             })
             this.setRightDialog = false
         }
-
     }
 }
 </script>
