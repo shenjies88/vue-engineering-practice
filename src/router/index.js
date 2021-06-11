@@ -6,6 +6,7 @@ import Welcome from '@/views/Welcome'
 import User from '@/views/User'
 import GoodList from '@/views/GoodList'
 import Rights from '@/views/Rights'
+import Roles from '@/views/Roles'
 import { Message } from 'element-ui'
 
 Vue.use(VueRouter)
@@ -35,9 +36,14 @@ const routes = [
             {
                 path: '/goods',
                 component: GoodList
-            }, {
+            },
+            {
                 path: '/rights',
                 component: Rights
+            },
+            {
+                path: '/roles',
+                component: Roles
             }
         ]
     }
