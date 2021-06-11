@@ -34,7 +34,8 @@
                                    @click="removeUser(scope.row.id)"></el-button>
                     </el-tooltip>
                     <el-tooltip content="分配角色" placement="top" :enterable="false">
-                        <el-button size="mini" type="warning" icon="el-icon-setting"></el-button>
+                        <el-button size="mini" type="warning" icon="el-icon-setting"
+                                   @click="showSetRolesDialog(scope.row)"></el-button>
                     </el-tooltip>
                 </template>
             </el-table-column>
@@ -96,12 +97,27 @@
                 <el-button type="primary" @click="updateUser">确 定</el-button>
             </span>
         </el-dialog>
+        <!-- 分配角色对话框 -->
+        <el-dialog
+            title="分配角色"
+            :visible.sync="setRolesDialogVisible"
+            width="50%">
+            <div>
+                <p>{{ '当前用户：' + userInfo.username }}</p>
+                <p>{{ '当前角色：' + userInfo.role_name }}</p>
+            </div>
+            <span slot="footer" class="dialog-footer">
+    <el-button @click="setRolesDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="setRolesDialogVisible = false">确 定</el-button>
+  </span>
+        </el-dialog>
     </el-card>
 </template>
 
 <script>
 import regConst from '@/const/regConst'
 import userApi from '@/api/userApi'
+import rolesApi from '@/api/rolesApi'
 
 export default {
     name: 'User',
@@ -119,6 +135,8 @@ export default {
             cb()
         }
         return {
+            userInfo: {},
+            roleList: [],
             userList: [],
             queryParams: {
                 query: '',
@@ -128,6 +146,7 @@ export default {
             total: 0,
             addDialogVisible: false,
             updateDialogVisible: false,
+            setRolesDialogVisible: false,
             addForm: {
                 username: '',
                 password: '',
@@ -297,6 +316,14 @@ export default {
                     message: '已取消删除'
                 })
             })
+        },
+        showSetRolesDialog(userInfo) {
+            this.userInfo = userInfo
+            rolesApi.rolesList().then(res => {
+                this.roleList = res
+                console.log(this.roleList)
+            })
+            this.setRolesDialogVisible = true
         }
     }
 }
