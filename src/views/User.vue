@@ -105,10 +105,20 @@
             <div>
                 <p>{{ '当前用户：' + userInfo.username }}</p>
                 <p>{{ '当前角色：' + userInfo.role_name }}</p>
+                <p>分配新角色：
+                    <el-select v-model="selectRoleId" placeholder="请选择">
+                        <el-option
+                            v-for="item in this.roleList"
+                            :key="item.id"
+                            :label="item.roleName"
+                            :value="item.id">
+                        </el-option>
+                    </el-select>
+                </p>
             </div>
             <span slot="footer" class="dialog-footer">
     <el-button @click="setRolesDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="setRolesDialogVisible = false">确 定</el-button>
+    <el-button type="primary" @click="setRoles">确 定</el-button>
   </span>
         </el-dialog>
     </el-card>
@@ -135,6 +145,7 @@ export default {
             cb()
         }
         return {
+            selectRoleId: null,
             userInfo: {},
             roleList: [],
             userList: [],
@@ -323,6 +334,13 @@ export default {
                 this.roleList = res
             })
             this.setRolesDialogVisible = true
+        },
+        setRoles() {
+            this.setRolesDialogVisible = false
+            userApi.setRole(this.userInfo.id, this.selectRoleId).then(() => {
+                this.$message.success('分配成功')
+                this.getUserList()
+            })
         }
     }
 }

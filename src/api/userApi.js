@@ -20,5 +20,10 @@ export default {
     },
     deleteUser: function (id) {
         return axiosConfig.delete(`/users/${id}`)
+    },
+    setRole: function (userId, roleId) {
+        return axiosConfig.put(`/users/${userId}/role`, {
+            rid: roleId
+        })
     }
 }
