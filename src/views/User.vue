@@ -321,7 +321,6 @@ export default {
             this.userInfo = userInfo
             rolesApi.rolesList().then(res => {
                 this.roleList = res
-                console.log(this.roleList)
             })
             this.setRolesDialogVisible = true
         }
