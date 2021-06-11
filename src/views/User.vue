@@ -101,7 +101,8 @@
         <el-dialog
             title="分配角色"
             :visible.sync="setRolesDialogVisible"
-            width="50%">
+            width="50%"
+            @close="closeSetRolesDialog">
             <div>
                 <p>{{ '当前用户：' + userInfo.username }}</p>
                 <p>{{ '当前角色：' + userInfo.role_name }}</p>
@@ -336,11 +337,18 @@ export default {
             this.setRolesDialogVisible = true
         },
         setRoles() {
+            if (!this.selectRoleId) {
+                return this.$message.error('请选择角色')
+            }
             this.setRolesDialogVisible = false
             userApi.setRole(this.userInfo.id, this.selectRoleId).then(() => {
                 this.$message.success('分配成功')
                 this.getUserList()
             })
+        },
+        closeSetRolesDialog() {
+            this.userInfo = {}
+            this.selectRoleId = null
         }
     }
 }
