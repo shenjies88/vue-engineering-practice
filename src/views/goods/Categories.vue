@@ -6,15 +6,13 @@
             </el-col>
         </el-row>
         <!-- 表格 -->
-        <el-table stripe border :data="cateList" highlight-current-row>
+        <el-table border :data="cateList" row-key="cat_id" :tree-props=treeProps>
             <el-table-column type="index" label="#"></el-table-column>
             <el-table-column label="分类名称" prop="cat_name"></el-table-column>
             <el-table-column label="是否有效">
                 <template slot-scope="scope">
-                    <el-switch
-                        v-model="!scope.row.cat_deleted"
-                        disabled>
-                    </el-switch>
+                    <i style="color: green" v-if="!scope.row.cat_deleted" class="el-icon-success"></i>
+                    <i style="color: red" v-else class="el-icon-error"></i>
                 </template>
             </el-table-column>
             <el-table-column label="排序">
@@ -59,7 +57,10 @@ export default {
                 pagesize: 5
             },
             cateList: [],
-            total: 0
+            total: 0,
+            treeProps: {
+                children: 'children'
+            }
         }
     },
     created() {
