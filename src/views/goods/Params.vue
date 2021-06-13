@@ -174,7 +174,6 @@ export default {
                 return
             }
             paramsApi.list(this.selectCateId, this.tabActiveName).then(res => {
-                console.log(res)
                 if (this.tabActiveName === 'many') {
                     this.manyTableData = res
                 } else {
