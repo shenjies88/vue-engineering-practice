@@ -113,6 +113,12 @@ export default {
         },
         selectCateId() {
             return this.selectCateList[2]
+        },
+        title() {
+            return this.tabActiveName === 'many' ? '添加动态参数' : '添加静态属性'
+        },
+        inputName() {
+            return this.tabActiveName === 'many' ? '动态属性' : '静态属性'
         }
     },
     data: function () {
@@ -131,8 +137,6 @@ export default {
             tabActiveName: 'many',
             manyTableData: [],
             onlyTableData: [],
-            title: '',
-            inputName: '',
             dialogVisible: false,
             addParamsForm: {
                 attr_name: ''
@@ -182,13 +186,6 @@ export default {
             })
         },
         showDiaLog() {
-            if (this.tabActiveName === 'many') {
-                this.title = '添加动态参数'
-                this.inputName = '动态参数'
-            } else {
-                this.title = '添加静态属性'
-                this.inputName = '静态属性'
-            }
             this.dialogVisible = true
         },
         closeDiaLog() {
