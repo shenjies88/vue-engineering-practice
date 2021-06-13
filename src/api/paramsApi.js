@@ -13,5 +13,11 @@ export default {
             attr_name,
             attr_sel
         })
+    },
+    update: function (id, attrId, attr_name, attr_sel) {
+        return axiosConfig.put(`categories/${id}/attributes/${attrId}`, {
+            attr_name,
+            attr_sel
+        })
     }
 }
