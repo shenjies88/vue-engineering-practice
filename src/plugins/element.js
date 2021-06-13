@@ -5,6 +5,7 @@ import {
     BreadcrumbItem,
     Button,
     Card,
+    Cascader,
     Col,
     Container,
     Dialog,
@@ -58,5 +59,6 @@ Vue.use(Tag)
 Vue.use(Tree)
 Vue.use(Select)
 Vue.use(Option)
+Vue.use(Cascader)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

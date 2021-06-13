@@ -1,8 +1,9 @@
 <template>
     <el-card>
+        <!-- 头部 -->
         <el-row>
             <el-col>
-                <el-button type="primary">添加分类</el-button>
+                <el-button type="primary" @click="showAddCateDaiLog">添加分类</el-button>
             </el-col>
         </el-row>
         <!-- 表格 -->
@@ -41,6 +42,33 @@
             layout="total, sizes, prev, pager, next, jumper"
             :total="this.total">
         </el-pagination>
+        <!-- 添加分类的对话框 -->
+        <el-dialog
+            title="添加分类"
+            :visible.sync="addCateVisible"
+            width="50%"
+            @close="closeAddCateDiaLog">
+            <el-form :model="addCateForm" :rules="addCateFormRules" ref="addCateFormRef" label-width="100px">
+                <el-form-item label="分类名称:" prop="cat_name">
+                    <el-input v-model="addCateForm.cat_name"></el-input>
+                </el-form-item>
+                <el-form-item label="父级分类:">
+                    <el-cascader
+                        v-model="selectCateList"
+                        :options="parentCateList"
+                        :props="cascaderProps"
+                        clearable
+                        @change="cascaderChange">
+                    </el-cascader>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+    <span class="dialog-footer">
+      <el-button @click="addCateVisible = false">取 消</el-button>
+      <el-button type="primary" @click="addCateVisible = false">确 定</el-button>
+    </span>
+            </template>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -56,10 +84,43 @@ export default {
                 pagenum: 1,
                 pagesize: 5
             },
+            parentCateQueryInfo: {
+                type: 2
+            },
             cateList: [],
             total: 0,
             treeProps: {
                 children: 'children'
+            },
+            addCateVisible: false,
+            addCateForm: {
+                cat_name: '',
+                cat_pid: 0,
+                cat_level: 0
+            },
+            addCateFormRules: {
+                cat_name: [
+                    {
+                        required: true,
+                        message: '请输入分类名称',
+                        trigger: 'blur'
+                    },
+                    {
+                        min: 3,
+                        max: 10,
+                        message: '长度在 3 到 10 个字符',
+                        trigger: 'blur'
+                    }
+                ]
+            },
+            parentCateList: [],
+            selectCateList: [],
+            cascaderProps: {
+                value: 'cat_id',
+                label: 'cat_name',
+                children: 'children',
+                checkStrictly: true,
+                expandTrigger: 'hover'
             }
         }
     },
@@ -67,6 +128,10 @@ export default {
         this.getCateList()
     },
     methods: {
+        showAddCateDaiLog() {
+            this.addCateVisible = true
+            this.getParentCateList()
+        },
         getCateList() {
             cateApi.list(this.queryInfo).then(res => {
                 this.cateList = res.result
@@ -90,11 +155,24 @@ export default {
                 case 2:
                     return 'warning'
             }
+        },
+        closeAddCateDiaLog() {
+            this.$refs.addCateFormRef.resetFields()
+        },
+        getParentCateList() {
+            cateApi.list(this.parentCateQueryInfo).then(res => {
+                this.parentCateList = res
+            })
+        },
+        cascaderChange() {
+            console.log(this.selectCateList)
         }
     },
 }
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+.el-cascader {
+    width: 100%;
+}
 </style>
