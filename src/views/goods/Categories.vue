@@ -29,7 +29,9 @@
                         </el-button>
                     </el-tooltip>
                     <el-tooltip content="删除" placement="top" :enterable="false">
-                        <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+                        <el-button size="mini" type="danger" icon="el-icon-delete"
+                                   @click="deleteCate(scope.row.cat_id)">删除
+                        </el-button>
                     </el-tooltip>
                 </template>
             </el-table-column>
@@ -245,6 +247,26 @@ export default {
                     this.getCateList()
                 })
                 this.updateCateDiaLogVisible = false
+            })
+        },
+        deleteCate(id) {
+            this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                cateApi.delete(id).then(() => {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    })
+                    this.getCateList()
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                })
             })
         }
     },

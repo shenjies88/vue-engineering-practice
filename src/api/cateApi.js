@@ -13,5 +13,8 @@ export default {
         return axiosConfig.put(`/categories/${id}`, {
             cat_name
         })
+    },
+    delete: function (id) {
+        return axiosConfig.delete(`/categories/${id}`)
     }
 }
