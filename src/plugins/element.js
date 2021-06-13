@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {
+    Alert,
     Aside,
     Breadcrumb,
     BreadcrumbItem,
@@ -27,6 +28,8 @@ import {
     Switch,
     Table,
     TableColumn,
+    TabPane,
+    Tabs,
     Tag,
     Tooltip,
     Tree
@@ -60,5 +63,8 @@ Vue.use(Tree)
 Vue.use(Select)
 Vue.use(Option)
 Vue.use(Cascader)
+Vue.use(Alert)
+Vue.use(Tabs)
+Vue.use(TabPane)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
