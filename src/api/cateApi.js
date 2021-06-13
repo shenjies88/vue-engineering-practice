@@ -8,5 +8,10 @@ export default {
     },
     add: function (body) {
         return axiosConfig.post('/categories', body)
+    },
+    update: function (id, cat_name) {
+        return axiosConfig.put(`/categories/${id}`, {
+            cat_name
+        })
     }
 }

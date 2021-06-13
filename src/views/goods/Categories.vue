@@ -24,7 +24,9 @@
             <el-table-column label="操作" width="180">
                 <template slot-scope="scope">
                     <el-tooltip content="编辑" placement="top" :enterable="false">
-                        <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
+                        <el-button size="mini" type="primary" icon="el-icon-edit"
+                                   @click="showUpdateCateDiaLog(scope.row)">编辑
+                        </el-button>
                     </el-tooltip>
                     <el-tooltip content="删除" placement="top" :enterable="false">
                         <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
@@ -68,6 +70,22 @@
       <el-button type="primary" @click="addCate">确 定</el-button>
     </span>
             </template>
+        </el-dialog>
+        <!-- 编辑分类对话框 -->
+        <el-dialog
+            title="编辑分类"
+            :visible.sync="updateCateDiaLogVisible"
+            width="50%"
+            @close="closeUpdateCateDiaLog">
+            <el-form :model="updateCateForm" :rules="updateCateFormRules" ref="updateCateFormRef" label-width="100px">
+                <el-form-item label="分类名称" prop="cat_name">
+                    <el-input v-model="updateCateForm.cat_name"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+    <el-button @click="updateCateDiaLogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="updateCate">确 定</el-button>
+  </span>
         </el-dialog>
     </el-card>
 </template>
@@ -121,6 +139,26 @@ export default {
                 children: 'children',
                 checkStrictly: true,
                 expandTrigger: 'hover'
+            },
+            updateCateDiaLogVisible: false,
+            updateCateForm: {
+                cat_name: '',
+                id: null
+            },
+            updateCateFormRules: {
+                cat_name: [
+                    {
+                        required: true,
+                        message: '请输入分类名称',
+                        trigger: 'blur'
+                    },
+                    {
+                        min: 3,
+                        max: 10,
+                        message: '长度在 3 到 10 个字符',
+                        trigger: 'blur'
+                    }
+                ]
             }
         }
     },
@@ -186,6 +224,27 @@ export default {
                     this.getCateList()
                 })
                 this.addCateVisible = false
+            })
+        },
+        showUpdateCateDiaLog(row) {
+            this.updateCateDiaLogVisible = true
+            this.updateCateForm.cat_name = row.cat_name
+            this.updateCateForm.id = row.cat_id
+        },
+        closeUpdateCateDiaLog() {
+            this.$refs.updateCateFormRef.resetFields()
+            this.updateCateForm.id = null
+        },
+        updateCate() {
+            this.$refs.updateCateFormRef.validate(valid => {
+                if (!valid) {
+                    return
+                }
+                cateApi.update(this.updateCateForm.id, this.updateCateForm.cat_name).then(() => {
+                    this.$message.success('修改分类成功')
+                    this.getCateList()
+                })
+                this.updateCateDiaLogVisible = false
             })
         }
     },
