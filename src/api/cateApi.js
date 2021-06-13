@@ -5,5 +5,8 @@ export default {
         return axiosConfig.get('/categories', {
             params: queryInfo
         })
+    },
+    add: function (body) {
+        return axiosConfig.post('/categories', body)
     }
 }

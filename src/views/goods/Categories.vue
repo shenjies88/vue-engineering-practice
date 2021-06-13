@@ -65,7 +65,7 @@
             <template #footer>
     <span class="dialog-footer">
       <el-button @click="addCateVisible = false">取 消</el-button>
-      <el-button type="primary" @click="addCateVisible = false">确 定</el-button>
+      <el-button type="primary" @click="addCate">确 定</el-button>
     </span>
             </template>
         </el-dialog>
@@ -158,6 +158,9 @@ export default {
         },
         closeAddCateDiaLog() {
             this.$refs.addCateFormRef.resetFields()
+            this.selectCateList = []
+            this.addCateForm.cat_pid = 0
+            this.addCateForm.cat_level = 0
         },
         getParentCateList() {
             cateApi.list(this.parentCateQueryInfo).then(res => {
@@ -165,7 +168,25 @@ export default {
             })
         },
         cascaderChange() {
-            console.log(this.selectCateList)
+            if (this.selectCateList.length > 0) {
+                this.addCateForm.cat_pid = this.selectCateList[this.selectCateList.length - 1]
+                this.addCateForm.cat_level = this.selectCateList.length
+            } else {
+                this.addCateForm.cat_pid = 0
+                this.addCateForm.cat_level = 0
+            }
+        },
+        addCate() {
+            this.$refs.addCateFormRef.validate(valid => {
+                if (!valid) {
+                    return
+                }
+                cateApi.add(this.addCateForm).then(() => {
+                    this.$message.success('添加分类成功')
+                    this.getCateList()
+                })
+                this.addCateVisible = false
+            })
         }
     },
 }
