@@ -29,9 +29,22 @@
                 <el-table border stripe :data="manyTableData">
                     <el-table-column type="expand">
                         <template slot-scope="scope">
-                            <el-tag style="margin-right: 15px" v-for="item in scope.row.attr_vals.split(',')">
+                            <!-- 循环渲染 -->
+                            <el-tag closable style="margin-right: 15px" v-for="(item,i) in scope.row.attr_vals"
+                                    :key="i" @close="closeManyTag(i,scope.row)">
                                 {{ item }}
                             </el-tag>
+                            <el-input
+                                class="input-new-tag"
+                                v-if="scope.row.inputVisible"
+                                v-model="scope.row.inputValue"
+                                ref="saveTagInput"
+                                size="small"
+                                @keyup.enter.native="handleInputConfirm(scope.row)"
+                                @blur="handleInputConfirm(scope.row)"></el-input>
+                            <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New
+                                Tag
+                            </el-button>
                         </template>
                     </el-table-column>
                     <el-table-column type="index" label="#"></el-table-column>
@@ -44,7 +57,8 @@
                                 </el-button>
                             </el-tooltip>
                             <el-tooltip content="删除" placement="top" :enterable="false">
-                                <el-button size="mini" type="danger" icon="el-icon-delete">删除
+                                <el-button size="mini" type="danger" icon="el-icon-delete"
+                                           @click="deleteParams(scope.row.attr_id)">删除
                                 </el-button>
                             </el-tooltip>
                         </template>
@@ -58,7 +72,8 @@
                 <el-table border stripe :data="onlyTableData">
                     <el-table-column type="expand">
                         <template slot-scope="scope">
-                            <el-tag style="margin-right: 15px" v-for="item in scope.row.attr_vals.split(',')">
+                            <el-tag closable style="margin-right: 15px" v-for="(item,i) in scope.row.attr_vals"
+                                    :key="i">
                                 {{ item }}
                             </el-tag>
                         </template>
@@ -73,7 +88,8 @@
                                 </el-button>
                             </el-tooltip>
                             <el-tooltip content="删除" placement="top" :enterable="false">
-                                <el-button size="mini" type="danger" icon="el-icon-delete">删除
+                                <el-button size="mini" type="danger" icon="el-icon-delete"
+                                           @click="deleteParams(scope.row.attr_id)">删除
                                 </el-button>
                             </el-tooltip>
                         </template>
@@ -216,6 +232,12 @@ export default {
                 return
             }
             paramsApi.list(this.selectCateId, this.tabActiveName).then(res => {
+                res.forEach(item => {
+                    item.attr_vals = item.attr_vals ?
+                        item.attr_vals.split(',') : []
+                    item.inputVisible = false
+                    item.inputValue = ''
+                })
                 if (this.tabActiveName === 'many') {
                     this.manyTableData = res
                 } else {
@@ -261,6 +283,51 @@ export default {
             this.editParamsForm.attr_name = row.attr_name
             this.editParamsForm.attrId = row.attr_id
             this.editDiaLogVisible = true
+        },
+        deleteParams(attrId) {
+            this.$confirm('此操作将永久删除该参数, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                paramsApi.delete(this.selectCateId, attrId).then(() => {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    })
+                    this.changeData()
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                })
+            })
+        },
+        handleInputConfirm(row) {
+            if (row.inputValue.trim().length === 0) {
+                row.inputValue = ''
+                row.inputVisible = false
+                return
+            }
+            row.attr_vals.push(row.inputValue.trim())
+            row.inputValue = ''
+            row.inputVisible = false
+            paramsApi.update(this.selectCateId, row.attr_id, row.attr_name, row.attr_sel, row.attr_vals.join(',')).then(res => {
+                this.$message.success('添加属性成功')
+            })
+        },
+        showInput(row) {
+            row.inputVisible = true
+            this.$nextTick(_ => {
+                this.$refs.saveTagInput.$refs.input.focus()
+            })
+        },
+        closeManyTag(index, row) {
+            row.attr_vals.splice(index, 1)
+            paramsApi.update(this.selectCateId, row.attr_id, row.attr_name, row.attr_sel, row.attr_vals.join(',')).then(_ => {
+                this.$message.success('删除成功')
+            })
         }
     }
 }
@@ -269,5 +336,9 @@ export default {
 <style lang="less" scoped>
 .cat_op {
     margin-top: 15px;
+}
+
+.input-new-tag {
+    width: 150px;
 }
 </style>

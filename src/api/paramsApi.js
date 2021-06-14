@@ -14,10 +14,14 @@ export default {
             attr_sel
         })
     },
-    update: function (id, attrId, attr_name, attr_sel) {
+    update: function (id, attrId, attr_name, attr_sel, attr_vals) {
         return axiosConfig.put(`categories/${id}/attributes/${attrId}`, {
             attr_name,
-            attr_sel
+            attr_sel,
+            attr_vals
         })
+    },
+    delete: function (id, attrId) {
+        return axiosConfig.delete(`categories/${id}/attributes/${attrId}`)
     }
 }
