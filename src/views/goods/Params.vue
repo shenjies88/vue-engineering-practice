@@ -72,7 +72,7 @@
                 <el-table border stripe :data="onlyTableData">
                     <el-table-column type="expand">
                         <template slot-scope="scope">
-                            <el-tag closable style="margin-right: 15px" v-for="(item,i) in scope.row.attr_vals"
+                            <el-tag style="margin-right: 15px" v-for="(item,i) in scope.row.attr_vals"
                                     :key="i">
                                 {{ item }}
                             </el-tag>
@@ -229,6 +229,7 @@ export default {
             if (!id) {
                 this.manyTableData = []
                 this.onlyTableData = []
+                this.selectCateList = []
                 return
             }
             paramsApi.list(this.selectCateId, this.tabActiveName).then(res => {
