@@ -8,5 +8,8 @@ export default {
     },
     delete: function (id) {
         return axiosConfig.delete(`goods/${id}`)
+    },
+    add: function (data) {
+        return axiosConfig.post('/goods', data)
     }
 }

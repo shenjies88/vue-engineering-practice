@@ -1,15 +1,17 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+import config from '@/config/config'
+import router from '@/router'
 
-axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1'
+axios.defaults.baseURL = config[process.env.NODE_ENV].baseURL
 axios.interceptors.request.use(config => {
     config.headers.Authorization = window.sessionStorage.getItem('token')
     return config
 })
 axios.interceptors.response.use(response => {
-        const {
-            status,
-            data: res
+    const {
+        status,
+        data: res
         } = response
         if (status !== 200) {
             let errorMsg = '网络异常'
@@ -32,6 +34,9 @@ axios.interceptors.response.use(response => {
         } = res
         if (meta.status !== 200 && meta.status !== 201) {
             Message.error(meta.msg)
+            if (meta.msg === '无效token') {
+                return router.push('/login')
+            }
             throw new Error(meta.msg)
         }
         return data

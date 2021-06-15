@@ -125,7 +125,7 @@ export default {
             })
         },
         addGoods() {
-            this.$router.push('/goods/add')
+            this.$router.push('/goods-add')
         }
     }
 }

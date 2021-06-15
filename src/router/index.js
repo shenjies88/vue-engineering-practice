@@ -57,7 +57,7 @@ const routes = [
                 component: Params
             },
             {
-                path: '/goods/add',
+                path: '/goods-add',
                 component: AddGood
             }
         ]
@@ -71,14 +71,12 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     if (to.path === '/login') {
-        next()
-        return
+        return next()
     }
     const tokenStr = window.sessionStorage.getItem('token')
     if (!tokenStr) {
         Message.error('未登录或登陆已过期')
-        next('/login')
-        return
+        return next('/login')
     }
     next()
 })

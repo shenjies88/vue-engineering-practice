@@ -33,9 +33,9 @@
                     <el-form-item label="商品数量" prop="goods_number">
                         <el-input v-model="addForm.goods_number" type="number"/>
                     </el-form-item>
-                    <el-form-item label="商品分类（仅可选择三级分类）" prop="selectCateList">
+                    <el-form-item label="商品分类（仅可选择三级分类）" prop="goods_cat">
                         <el-cascader
-                            v-model="addForm.selectCateList"
+                            v-model="addForm.goods_cat"
                             :options="cateList"
                             :props="cascaderProps"
                             clearable
@@ -46,21 +46,48 @@
                 <el-tab-pane label="商品参数" name="1">
                     <el-form-item :label="item.attr_name" v-for="item in paramsManyDataList" :key="item.attr_id">
                         <el-checkbox-group v-model="item.attr_vals">
-                            <el-checkbox :key="i" v-for="(attr,i) in item.attr_vals" :label="attr"></el-checkbox>
+                            <el-checkbox border :key="i" v-for="(attr,i) in item.attr_vals" :label="attr"></el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
                 </el-tab-pane>
-                <el-tab-pane label="商品属性" name="2">商品属性</el-tab-pane>
-                <el-tab-pane label="商品图片" name="3">商品图片</el-tab-pane>
-                <el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
+                <el-tab-pane label="商品属性" name="2">
+                    <el-form-item :label="item.attr_name" v-for="item in paramsOnlyDataList" :key="item.attr_id">
+                        <el-input v-model="item.attr_vals"></el-input>
+                    </el-form-item>
+                </el-tab-pane>
+                <el-tab-pane label="商品图片" name="3">
+                    <el-upload
+                        :action="uploadURL"
+                        :headers="headersObj"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :on-success="onSuccess"
+                        list-type="picture">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                    </el-upload>
+                </el-tab-pane>
+                <el-tab-pane label="商品内容" name="4">
+                    <quill-editor v-model="addForm.goods_introduce"/>
+                    <el-button style="margin-top: 15px" type="primary" @click="addGood">添加商品</el-button>
+                </el-tab-pane>
             </el-tabs>
         </el-form>
+        <!-- 图片预览对话框 -->
+        <el-dialog
+            title="预览图片"
+            :visible.sync="previewVisible"
+            width="50%">
+            <img style="width: 100%" :src="previewUrl">
+        </el-dialog>
     </el-card>
 </template>
 
 <script>
 import cateApi from '@/api/cateApi'
 import paramsApi from '@/api/paramsApi'
+import goodApi from '@/api/goodApi'
+import config from '@/config/config'
+import _ from 'lodash'
 
 export default {
     name: 'AddGood',
@@ -69,11 +96,21 @@ export default {
     },
     computed: {
         selectCateId: function () {
-            return this.addForm.selectCateList[2]
+            return this.addForm.goods_cat[2]
         }
     },
     data: function () {
         return {
+            previewUrl: '',
+            previewVisible: false,
+            //图片上传请求头
+            headersObj: {
+                Authorization: window.sessionStorage.getItem('token')
+            },
+            //图片上传url
+            uploadURL: config[process.env.NODE_ENV].baseURL + '/upload',
+            //商品属性
+            paramsOnlyDataList: [],
             //商品参数
             paramsManyDataList: [],
             //商品分类列表
@@ -92,7 +129,9 @@ export default {
                 goods_weight: 0,
                 goods_number: 0,
                 //已选择的商品分类id列表
-                selectCateList: []
+                goods_cat: [],
+                pics: [],
+                goods_introduce: ''
             },
             addFormRules: {
                 goods_name: [
@@ -123,14 +162,14 @@ export default {
                         trigger: 'blur'
                     }
                 ],
-                selectCateList: [
+                goods_cat: [
                     {
                         required: true,
                         message: '请选择商品分类',
                         trigger: 'blur'
                     }
                 ]
-            }
+            },
         }
     },
     methods: {
@@ -140,12 +179,12 @@ export default {
             })
         },
         cascaderChange() {
-            if (this.addForm.selectCateList.length !== 3) {
-                this.addForm.selectCateList = []
+            if (this.addForm.goods_cat.length !== 3) {
+                this.addForm.goods_cat = []
             }
         },
         beforeLeave(activeName, oldActiveName) {
-            if (oldActiveName === '0' && this.addForm.selectCateList.length !== 3) {
+            if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
                 this.$message.error('请选择商品分类')
                 return false
             }
@@ -159,12 +198,64 @@ export default {
                     })
                     this.paramsManyDataList = res
                 })
+            } else if (this.activeIndex === '2') {
+                paramsApi.list(this.selectCateId, 'only').then(res => {
+                    this.paramsOnlyDataList = res
+                })
             }
+        },
+        handlePreview(file) {
+            this.previewUrl = file.response.data.url
+            this.previewVisible = true
+        },
+        handleRemove(file) {
+            const filePath = file.response.data.tmp_path
+            const i = this.addForm.pics.findIndex(x => x.pic === filePath)
+            this.addForm.pics.splice(i, 1)
+        },
+        onSuccess(response) {
+            const picInfo = {
+                pic: response.data.tmp_path
+            }
+            this.addForm.pics.push(picInfo)
+        },
+        addGood() {
+            this.$refs.addFormRef.validate(valid => {
+                if (!valid) {
+                    return this.$message.error('请填写必要的属性')
+                }
+                const postAddForm = _.cloneDeep(this.addForm)
+                postAddForm.goods_cat = this.addForm.goods_cat.join(',')
+                const attrs = []
+                //动态参数
+                this.paramsManyDataList.forEach(item => {
+                    const newInfo = {
+                        attr_id: item.attr_id,
+                        attr_value: item.attr_vals.join(',')
+                    }
+                    attrs.push(newInfo)
+                })
+                //静态属性
+                this.paramsOnlyDataList.forEach(item => {
+                    const newInfo = {
+                        attr_id: item.attr_id,
+                        attr_value: item.attr_vals
+                    }
+                    attrs.push(newInfo)
+                })
+                postAddForm.attrs = attrs
+                goodApi.add(postAddForm).then(_ => {
+                    this.$message.success('添加成功')
+                    this.$router.push('/goods')
+                })
+            })
         }
     }
 }
 </script>
 
 <style lang="less" scoped>
-
+.el-checkbox {
+    margin: 0 10px 0 0;
+}
 </style>

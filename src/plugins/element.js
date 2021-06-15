@@ -36,8 +36,15 @@ import {
     Tabs,
     Tag,
     Tooltip,
-    Tree
+    Tree,
+    Upload,
 } from 'element-ui'
+
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css' // import styles
+import 'quill/dist/quill.snow.css' // for snow theme
+import 'quill/dist/quill.bubble.css' // for bubble theme
+Vue.use(VueQuillEditor, /* { default global options } */)
 
 Vue.use(Button)
 Vue.use(Form)
@@ -74,5 +81,6 @@ Vue.use(Steps)
 Vue.use(Step)
 Vue.use(CheckboxGroup)
 Vue.use(Checkbox)
+Vue.use(Upload)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

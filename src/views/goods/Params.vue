@@ -76,17 +76,6 @@
                                     :key="i">
                                 {{ item }}
                             </el-tag>
-                            <el-input
-                                class="input-new-tag"
-                                v-if="scope.row.inputVisible"
-                                v-model="scope.row.inputValue"
-                                ref="saveTagInput"
-                                size="small"
-                                @keyup.enter.native="handleInputConfirm(scope.row)"
-                                @blur="handleInputConfirm(scope.row)"></el-input>
-                            <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New
-                                Tag
-                            </el-button>
                         </template>
                     </el-table-column>
                     <el-table-column type="index" label="#"></el-table-column>
@@ -194,9 +183,9 @@ export default {
                         trigger: 'blur'
                     },
                     {
-                        min: 3,
+                        min: 2,
                         max: 10,
-                        message: '长度在 3 到 10 个字符',
+                        message: '长度在 2 到 10 个字符',
                         trigger: 'blur'
                     }
                 ],
