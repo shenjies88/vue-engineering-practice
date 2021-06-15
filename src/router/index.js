@@ -9,6 +9,7 @@ import Rights from '@/views/rights/Rights'
 import Roles from '@/views/rights/Roles'
 import Categories from '@/views/goods/Categories'
 import Params from '@/views/goods/Params'
+import AddGood from '@/views/goods/AddGood'
 import { Message } from 'element-ui'
 
 Vue.use(VueRouter)
@@ -54,6 +55,10 @@ const routes = [
             {
                 path: '/params',
                 component: Params
+            },
+            {
+                path: '/goods/add',
+                component: AddGood
             }
         ]
     }

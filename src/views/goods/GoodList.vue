@@ -7,7 +7,7 @@
                 <el-input clearable @clear="inputClear" @change="inputChange" v-model="queryParams.query"
                           placeholder="请输入内容"></el-input>
                 <!-- 添加商品按钮 -->
-                <el-button type="primary">添加商品</el-button>
+                <el-button type="primary" @click="addGoods">添加商品</el-button>
             </el-col>
         </el-row>
         <!-- 商品表格数据 -->
@@ -123,6 +123,9 @@ export default {
                     message: '已取消删除'
                 })
             })
+        },
+        addGoods() {
+            this.$router.push('/goods/add')
         }
     }
 }
