@@ -35,9 +35,11 @@ import {
     TabPane,
     Tabs,
     Tag,
+    Timeline,
+    TimelineItem,
     Tooltip,
     Tree,
-    Upload,
+    Upload
 } from 'element-ui'
 
 import VueQuillEditor from 'vue-quill-editor'
@@ -82,5 +84,7 @@ Vue.use(Step)
 Vue.use(CheckboxGroup)
 Vue.use(Checkbox)
 Vue.use(Upload)
+Vue.use(Timeline)
+Vue.use(TimelineItem)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
