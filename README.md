@@ -7,25 +7,24 @@
 - [后端项目原链接](https://gitee.com/wBekvam/vueShop-api-server.git)
 - [视频教程](https://www.bilibili.com/video/BV1EE411B7SU?p=32)
 
-## Project setup
+## 安装依赖
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 开发调试
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 生产打包
 ```
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+### 本地调试生产
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+```
+npm run build
+npm node-app
+```
