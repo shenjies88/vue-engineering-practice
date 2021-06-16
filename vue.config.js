@@ -14,9 +14,19 @@ module.exports = {
                 nprogress: 'nprogress',
                 'vue-quill-editor': 'VueQuillEditor'
             })
+
+            config.plugin('html').tap(args => {
+                args[0].isProd = true
+                return args
+            })
         } else {
             // 为开发环境修改配置...
             config.entry('app').clear().add('./src/main-dev.js')
+
+            config.plugin('html').tap(args => {
+                args[0].isProd = false
+                return args
+            })
         }
     }
 }
