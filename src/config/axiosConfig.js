@@ -2,13 +2,17 @@ import axios from 'axios'
 import { Message } from 'element-ui'
 import config from '@/config/config'
 import router from '@/router'
+import nprogress from 'nprogress'
+import 'nprogress/nprogress.css'
 
 axios.defaults.baseURL = config[process.env.NODE_ENV].baseURL
 axios.interceptors.request.use(config => {
+    nprogress.start()
     config.headers.Authorization = window.sessionStorage.getItem('token')
     return config
 })
 axios.interceptors.response.use(response => {
+    nprogress.done()
     const {
         status,
         data: res
